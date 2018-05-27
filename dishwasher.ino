@@ -1,27 +1,19 @@
 
-const int buttonPin = 2;     // the number of the pushbutton pin
-int buttonState = 0;         // variable for reading the pushbutton status
-//int pinOut = 8;
-
 int solenoidPin = 8;
 int pumpPin = 9;
 int motorPin = 10;
 //int soapPin = 11;
 
-// cicle settings
 unsigned long oneMin = 60000;
-//unsigned long initTime = oneMin/6;
-//unsigned long fillTime = oneMin*2;
-//unsigned long washTime = oneMin*42;
-//unsigned long drainTime = oneMin;
-//unsigned long rinseTime = oneMin*7;
 
 void setup(){
   Serial.begin(9600);
   pinMode(solenoidPin, OUTPUT);
   pinMode(pumpPin, OUTPUT);
   pinMode(motorPin, OUTPUT);
+}
 
+void loop() {
   /* Init */
 
   delay(oneMin/6);
@@ -57,13 +49,15 @@ void setup(){
   delay(oneMin*20);
   digitalWrite(motorPin, LOW);
 
-  delay(oneMin);
+  delay(oneMin*13);
 
   digitalWrite(pumpPin, HIGH);
   delay(oneMin/2);
   digitalWrite(pumpPin, LOW);
 
-  //Rinse 1
+  /* Rinse */
+
+  // Rinse 1
   digitalWrite(solenoidPin, HIGH);
   delay(oneMin);
   digitalWrite(solenoidPin, LOW);
@@ -78,11 +72,11 @@ void setup(){
   digitalWrite(pumpPin, LOW);
 
   // rest
-  delay(oneMin);
+  delay(oneMin*2);
 
   //Rinse 2
   digitalWrite(solenoidPin, HIGH);
-  delay(oneMin/2);
+  delay(oneMin);
   digitalWrite(solenoidPin, LOW);
 
   digitalWrite(motorPin, HIGH);
@@ -91,16 +85,10 @@ void setup(){
 
   // Drain water
   digitalWrite(pumpPin, HIGH);
-  delay(oneMin);
+  delay(oneMin*1.5);
   digitalWrite(pumpPin, LOW);
 
-  // rest
-  delay(oneMin);
-
-  //NOTE 67.5 minutes all up
-}
- 
-void loop() {
-
+  // Stop washing cycle
+  while(1);
 }
 
