@@ -16,16 +16,16 @@ void setup(){
 void loop() {
   /* Init */
 
-  delay(oneMin/6);
+  delay(oneMin/3);
   digitalWrite(pumpPin, HIGH);
-  delay(oneMin/6);
+  delay(oneMin/3);
   digitalWrite(pumpPin, LOW);
 
   /* Main */
 
   //Fill up with water 
   digitalWrite(solenoidPin, HIGH);
-  delay(oneMin);
+  delay(oneMin*1.5);
   digitalWrite(solenoidPin, LOW);
 
   // Start wash
@@ -42,7 +42,7 @@ void loop() {
   digitalWrite(pumpPin, LOW);
 
   digitalWrite(solenoidPin, HIGH);
-  delay(oneMin);
+  delay(oneMin*1.5);
   digitalWrite(solenoidPin, LOW);
 
   digitalWrite(motorPin, HIGH);
@@ -59,7 +59,7 @@ void loop() {
 
   // Rinse 1
   digitalWrite(solenoidPin, HIGH);
-  delay(oneMin);
+  delay(oneMin*1.5);
   digitalWrite(solenoidPin, LOW);
 
   digitalWrite(motorPin, HIGH);
