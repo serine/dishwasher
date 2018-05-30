@@ -1,7 +1,7 @@
 
 /*
 
-Name: Smart Dishwasher
+Name: Cool Dishwasher
 Author: kizza
 Date: 29.05.2018
 
@@ -12,25 +12,16 @@ const int pumpPin = 9;
 const int motorPin = 10;
 //int soapPin = 11;
 
-const unsigned long ONE_SEC = 1000UL;
-const unsigned long TWENTY_SEC = 20UL * ONE_SEC;
-const unsigned long THIRTY_SEC = 35UL * ONE_SEC;
-const unsigned long ONE_MIN = 60UL * ONE_SEC;
-const unsigned long TWO_MIN = 120UL * ONE_SEC;
-const unsigned long THREE_MIN = 180UL * ONE_SEC;
-const unsigned long ONE_N_HALF_MIN = 100UL * ONE_SEC; // I know that this is not minute and half!
-const unsigned long FIVE_MIN = 5UL * ONE_MIN;
-const unsigned long THIRTEEN_MIN = 13UL * ONE_MIN;
-const unsigned long THIRTY_MIN = 30UL * ONE_MIN;
-const unsigned long ONE_HOUR = 60UL * ONE_MIN;
+unsigned long ONE_SEC = 1000UL;
 
-void driveRelay(const int relayPin, const unsigned long cycleTime) {
+unsigned long time;
 
-  digitalWrite(relayPin, HIGH);
-  delay(cycleTime);
-  digitalWrite(relayPin, LOW);
-
-}
+int fillState = 0;
+int washState = 0;
+int rinseState = 0;
+int drainState = 1;
+int restState = 0;
+int doneState = 0;
 
 void setup() {
 
@@ -42,57 +33,82 @@ void setup() {
 }
 
 void loop() {
-  /* Init */
+    // time since current program stated running
+    time = millis();
 
-  delay(THIRTY_SEC);
-  driveRelay(pumpPin, THIRTY_SEC);
+    if(fillState == 1) {
+        digitalWrite(solenoidPin, HIGH);
+        digitalWrite(pumpPin, LOW);
+        digitalWrite(motorPin, LOW);
+    }
 
-  /* Main */
+    if(washState == 1) {
+        digitalWrite(solenoidPin, LOW);
+        digitalWrite(pumpPin, LOW);
+        digitalWrite(motorPin, HIGH);
+        fillState = 0;
+    }
 
-  // Cycle 1
+    if(drainState == 1) {
+        digitalWrite(solenoidPin, LOW);
+        digitalWrite(pumpPin, HIGH);
+        digitalWrite(motorPin, LOW);
+        restState = 0;
+        washState = 0;
+    }
 
-  // fill up
-  driveRelay(solenoidPin, ONE_N_HALF_MIN);
-  // wash
-  driveRelay(motorPin, THIRTY_MIN);
-  // rest
-  delay(ONE_MIN);
-  // drain
-  driveRelay(pumpPin, THIRTY_SEC);
+    if(restState == 1) {
+        digitalWrite(solenoidPin, LOW);
+        digitalWrite(pumpPin, LOW);
+        digitalWrite(motorPin, LOW);
+    }
 
-  // Cycle 2
+    if(doneState == 1) {
+        fillState = 0;
+        washState = 0;
+        rinseState = 0;
+        restState = 0;
+        drainState = 0;
+        digitalWrite(solenoidPin, LOW);
+        digitalWrite(pumpPin, LOW);
+        digitalWrite(motorPin, LOW);
+    }
 
-  // fill up
-  driveRelay(solenoidPin, ONE_N_HALF_MIN);
-  // wash
-  driveRelay(motorPin, THIRTY_MIN);
-  // rest
-  delay(THIRTEEN_MIN);
-  // drain
-  driveRelay(pumpPin, THIRTY_SEC);
+    if(time > ONE_SEC*30 && time < ONE_SEC*100) {
+        fillState = 1;
+    }
+    //1800 secs == 30 minutes
+    if(time > ONE_SEC*100 && time < ONE_SEC*1800) {
+        washState = 1;
+    }
 
-  /* Rinse */
+    if(time > ONE_SEC*1830 && time < ONE_SEC*2580) {
+        restState = 1;
+    }
 
-  // Rinse 1
+    if(time > ONE_SEC*2580 && time < ONE_SEC*2610) {
+        drainState = 1;
+    }
 
-  // fill up
-  driveRelay(solenoidPin, ONE_N_HALF_MIN);
-  // rinse
-  driveRelay(motorPin, FIVE_MIN);
-  // drain
-  driveRelay(pumpPin, ONE_MIN);
-  // rest
-  delay(TWO_MIN);
+    if(time > ONE_SEC*2610 && time < ONE_SEC*2700) {
+        fillState = 1;
+    }
 
-  // Rinse 2
+    //3000 secs == 50 minutes
+    if(time > ONE_SEC*2700 && time < ONE_SEC*3000) {
+        washState = 1;
+    }
 
-  // fill up
-  driveRelay(solenoidPin, ONE_N_HALF_MIN);
-  // rinse
-  driveRelay(motorPin, THREE_MIN);
-  // drain
-  driveRelay(pumpPin, ONE_N_HALF_MIN);
+    if(time > ONE_SEC*3000 && time < ONE_SEC*3120) {
+        restState = 1;
+    }
 
-  while(1);
+    if(time > ONE_SEC*3120 && time < ONE_SEC*3150) {
+        drainState = 1;
+    }
+
+    if(time > ONE_SEC*3150) {
+        doneState = 1;
+    }
 }
 
