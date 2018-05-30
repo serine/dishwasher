@@ -40,6 +40,7 @@ void loop() {
         digitalWrite(solenoidPin, HIGH);
         digitalWrite(pumpPin, LOW);
         digitalWrite(motorPin, LOW);
+        drainState = 0;
     }
 
     if(washState == 1) {
@@ -61,17 +62,21 @@ void loop() {
         digitalWrite(solenoidPin, LOW);
         digitalWrite(pumpPin, LOW);
         digitalWrite(motorPin, LOW);
+        fillState = 0;
+        washState = 0;
+        rinseState = 0;
+        drainState = 0;
     }
 
     if(doneState == 1) {
+        digitalWrite(solenoidPin, LOW);
+        digitalWrite(pumpPin, LOW);
+        digitalWrite(motorPin, LOW);
         fillState = 0;
         washState = 0;
         rinseState = 0;
         restState = 0;
         drainState = 0;
-        digitalWrite(solenoidPin, LOW);
-        digitalWrite(pumpPin, LOW);
-        digitalWrite(motorPin, LOW);
     }
 
     if(time > ONE_SEC*30 && time < ONE_SEC*100) {
